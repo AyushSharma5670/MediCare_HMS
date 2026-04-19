@@ -1,10 +1,11 @@
+
 import { useState, useEffect } from 'react';
 import { useOutletContext } from 'react-router-dom';
 import api from '../services/api';
-import { 
-  FilePlus, FileText, AlertCircle, Search, 
-  Filter, ChevronRight, Activity, ClipboardList, 
-  Pill, Stethoscope 
+import {
+  FilePlus, FileText, AlertCircle, Search,
+  Filter, ChevronRight, Activity, ClipboardList,
+  Pill, Stethoscope
 } from 'lucide-react';
 
 const defaultForm = { patient: '', doctor: '', appointment: '', diagnosis: '', prescription: '', treatment_plan: '' };
@@ -19,6 +20,7 @@ export default function Records() {
   const [formData, setFormData] = useState(defaultForm);
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [filterType, setFilterType] = useState('All');
 
   const fetchAll = async () => {
     try {
@@ -55,12 +57,12 @@ export default function Records() {
   };
 
   const filtered = records.filter(rec => {
-    const searchMatch = 
+    const searchMatch =
       (rec.diagnosis || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (rec.patient_details?.user?.username || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (rec.patient_details?.user?.first_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       (rec.patient_details?.user?.last_name || '').toLowerCase().includes(searchTerm.toLowerCase());
-    
+
     if (filterType === 'All') return searchMatch;
     if (filterType === 'Critical') return searchMatch && rec.diagnosis.toLowerCase().includes('critical');
     return searchMatch;
@@ -89,7 +91,7 @@ export default function Records() {
         {[
           { label: 'Total Records', value: records.length, icon: ClipboardList, color: 'text-primary', bg: 'bg-primary/10' },
           { label: 'Recent Diagnoses', value: records.length > 0 ? '4' : '0', icon: Activity, color: 'text-emerald-600', bg: 'bg-emerald-50' },
-          { label: 'Active Prescriptions', value: records.filter(r=>r.prescription).length, icon: Pill, color: 'text-purple-600', bg: 'bg-purple-50' },
+          { label: 'Active Prescriptions', value: records.filter(r => r.prescription).length, icon: Pill, color: 'text-purple-600', bg: 'bg-purple-50' },
         ].map((stat, i) => (
           <div key={i} className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4">
             <div className={`w-12 h-12 rounded-xl ${stat.bg} flex items-center justify-center`}>
@@ -118,7 +120,7 @@ export default function Records() {
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl border border-slate-100 shadow-sm focus-within:ring-2 focus-within:ring-primary/20">
             <Filter className="w-4 h-4 text-slate-400" />
-            <select 
+            <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
               className="bg-transparent border-none outline-none text-sm font-bold text-slate-600 cursor-pointer"
@@ -161,50 +163,50 @@ export default function Records() {
               </div>
 
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-                 <div className="space-y-4">
-                    <div className="flex items-center gap-2 mb-2">
-                       <Stethoscope className="w-4 h-4 text-primary" />
-                       <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Healthcare Provider</span>
-                    </div>
-                    <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                       <p className="text-sm font-bold text-slate-700">
-                         Dr. {rec.doctor_details?.user?.first_name ? `${rec.doctor_details.user.first_name} ${rec.doctor_details.user.last_name}` : rec.doctor_details?.user?.username}
-                       </p>
-                       <p className="text-xs text-slate-400 font-medium uppercase mt-0.5">{rec.doctor_details?.specialization}</p>
-                    </div>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Stethoscope className="w-4 h-4 text-primary" />
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Healthcare Provider</span>
+                  </div>
+                  <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                    <p className="text-sm font-bold text-slate-700">
+                      Dr. {rec.doctor_details?.user?.first_name ? `${rec.doctor_details.user.first_name} ${rec.doctor_details.user.last_name}` : rec.doctor_details?.user?.username}
+                    </p>
+                    <p className="text-xs text-slate-400 font-medium uppercase mt-0.5">{rec.doctor_details?.specialization}</p>
+                  </div>
 
-                    <div className="flex items-center gap-2 mb-2 pt-2">
-                       <Activity className="w-4 h-4 text-emerald-600" />
-                       <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Patient Information</span>
-                    </div>
-                    <div className="p-4 bg-emerald-50/50 rounded-2xl border border-emerald-100">
-                       <p className="text-sm font-bold text-emerald-700">
-                         {rec.patient_details?.user?.first_name ? `${rec.patient_details.user.first_name} ${rec.patient_details.user.last_name}` : rec.patient_details?.user?.username}
-                       </p>
-                       <p className="text-xs text-emerald-600/70 font-medium mt-0.5 uppercase tracking-tighter">ID: PT-00{rec.patient_details?.id}</p>
-                    </div>
-                 </div>
+                  <div className="flex items-center gap-2 mb-2 pt-2">
+                    <Activity className="w-4 h-4 text-emerald-600" />
+                    <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Patient Information</span>
+                  </div>
+                  <div className="p-4 bg-emerald-50/50 rounded-2xl border border-emerald-100">
+                    <p className="text-sm font-bold text-emerald-700">
+                      {rec.patient_details?.user?.first_name ? `${rec.patient_details.user.first_name} ${rec.patient_details.user.last_name}` : rec.patient_details?.user?.username}
+                    </p>
+                    <p className="text-xs text-emerald-600/70 font-medium mt-0.5 uppercase tracking-tighter">ID: PT-00{rec.patient_details?.id}</p>
+                  </div>
+                </div>
 
-                 <div className="space-y-6">
-                    {rec.prescription && (
-                      <div className="relative p-6 bg-primary/5 rounded-2xl border border-primary/10 group-hover:bg-primary/[0.07] transition-colors">
-                        <div className="flex items-center gap-2 mb-3">
-                           <Pill className="w-4 h-4 text-primary" />
-                           <span className="text-xs font-bold text-primary uppercase tracking-widest">Prescription Details</span>
-                        </div>
-                        <p className="text-sm text-slate-700 font-medium leading-relaxed whitespace-pre-line">{rec.prescription}</p>
+                <div className="space-y-6">
+                  {rec.prescription && (
+                    <div className="relative p-6 bg-primary/5 rounded-2xl border border-primary/10 group-hover:bg-primary/[0.07] transition-colors">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Pill className="w-4 h-4 text-primary" />
+                        <span className="text-xs font-bold text-primary uppercase tracking-widest">Prescription Details</span>
                       </div>
-                    )}
-                    {rec.treatment_plan && (
-                      <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
-                        <div className="flex items-center gap-2 mb-3">
-                           <ClipboardList className="w-4 h-4 text-slate-400" />
-                           <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Treatment Plan</span>
-                        </div>
-                        <p className="text-sm text-slate-600 font-medium leading-relaxed whitespace-pre-line">{rec.treatment_plan}</p>
+                      <p className="text-sm text-slate-700 font-medium leading-relaxed whitespace-pre-line">{rec.prescription}</p>
+                    </div>
+                  )}
+                  {rec.treatment_plan && (
+                    <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
+                      <div className="flex items-center gap-2 mb-3">
+                        <ClipboardList className="w-4 h-4 text-slate-400" />
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Treatment Plan</span>
                       </div>
-                    )}
-                 </div>
+                      <p className="text-sm text-slate-600 font-medium leading-relaxed whitespace-pre-line">{rec.treatment_plan}</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -228,14 +230,14 @@ export default function Records() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-xs font-bold text-slate-500 uppercase ml-1">Patient *</label>
-                    <select required onChange={e=>setFormData({...formData, patient: e.target.value})} className="w-full border border-slate-200 p-3 rounded-xl mt-1.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white">
+                    <select required onChange={e => setFormData({ ...formData, patient: e.target.value })} className="w-full border border-slate-200 p-3 rounded-xl mt-1.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white">
                       <option value="">Select Patient</option>
                       {patients.map(p => <option key={p.id} value={p.id}>{p.user.username} ({p.user.first_name})</option>)}
                     </select>
                   </div>
                   <div>
                     <label className="text-xs font-bold text-slate-500 uppercase ml-1">Doctor *</label>
-                    <select required onChange={e=>setFormData({...formData, doctor: e.target.value})} className="w-full border border-slate-200 p-3 rounded-xl mt-1.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white">
+                    <select required onChange={e => setFormData({ ...formData, doctor: e.target.value })} className="w-full border border-slate-200 p-3 rounded-xl mt-1.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white">
                       <option value="">Select Doctor</option>
                       {doctors.map(d => <option key={d.id} value={d.id}>Dr. {d.user.last_name}</option>)}
                     </select>
@@ -243,7 +245,7 @@ export default function Records() {
                 </div>
                 <div>
                   <label className="text-xs font-bold text-slate-500 uppercase ml-1">Related Appointment</label>
-                  <select onChange={e=>setFormData({...formData, appointment: e.target.value})} className="w-full border border-slate-200 p-3 rounded-xl mt-1.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white">
+                  <select onChange={e => setFormData({ ...formData, appointment: e.target.value })} className="w-full border border-slate-200 p-3 rounded-xl mt-1.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none bg-white">
                     <option value="">No specific appointment</option>
                     {appointments.map(a => <option key={a.id} value={a.id}>#{a.id} — {new Date(a.appointment_datetime).toLocaleDateString()}</option>)}
                   </select>
@@ -252,23 +254,23 @@ export default function Records() {
                 <p className="text-[10px] font-bold text-primary uppercase tracking-widest pt-2">Clinical Findings</p>
                 <div>
                   <label className="text-xs font-bold text-slate-500 uppercase ml-1">Diagnosis *</label>
-                  <input required type="text" onChange={e=>setFormData({...formData, diagnosis: e.target.value})} className="w-full border border-slate-200 p-3 rounded-xl mt-1.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="e.g. Chronic Hypertension" />
+                  <input required type="text" onChange={e => setFormData({ ...formData, diagnosis: e.target.value })} className="w-full border border-slate-200 p-3 rounded-xl mt-1.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="e.g. Chronic Hypertension" />
                 </div>
                 <div>
                   <label className="text-xs font-bold text-slate-500 uppercase ml-1">Prescription</label>
-                  <textarea rows="3" onChange={e=>setFormData({...formData, prescription: e.target.value})} className="w-full border border-slate-200 p-3 rounded-xl mt-1.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="List medications, dosage and frequency..."></textarea>
+                  <textarea rows="3" onChange={e => setFormData({ ...formData, prescription: e.target.value })} className="w-full border border-slate-200 p-3 rounded-xl mt-1.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="List medications, dosage and frequency..."></textarea>
                 </div>
                 <div>
                   <label className="text-xs font-bold text-slate-500 uppercase ml-1">Treatment Plan</label>
-                  <textarea rows="3" onChange={e=>setFormData({...formData, treatment_plan: e.target.value})} className="w-full border border-slate-200 p-3 rounded-xl mt-1.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Notes on follow-up, diet, exercise..."></textarea>
+                  <textarea rows="3" onChange={e => setFormData({ ...formData, treatment_plan: e.target.value })} className="w-full border border-slate-200 p-3 rounded-xl mt-1.5 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all" placeholder="Notes on follow-up, diet, exercise..."></textarea>
                 </div>
               </div>
 
               <div className="flex justify-end gap-4 pt-2">
                 <button type="button" onClick={() => setIsModalOpen(false)} className="px-6 py-3 rounded-xl font-bold text-slate-500 hover:bg-slate-50 transition-all">Cancel</button>
                 <button type="submit" disabled={loading} className="px-8 py-3 bg-primary text-white rounded-xl font-bold hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center gap-2">
-                   {loading && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
-                   {loading ? 'Saving...' : 'Save Record'}
+                  {loading && <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />}
+                  {loading ? 'Saving...' : 'Save Record'}
                 </button>
               </div>
             </form>
